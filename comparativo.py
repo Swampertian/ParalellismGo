@@ -1,6 +1,7 @@
 import requests
 import time
 import multiprocessing as mp
+import os
 
 def fetch_endpoint1(queue):
     start = time.time()
@@ -17,7 +18,12 @@ def fetch_endpoint1(queue):
 
 def fetch_endpoint2(queue):
     start = time.time()
-    url = "https://apitempo.inmet.gov.br/token/estacao/diaria/2022-11-01/2022-11-01/A001/b1dUemZPbmJLbHU1aWpGRnFEWWFvcTU4cGNNR29VT2g=oWTzfOnbKlu5ijFFqDYaoq58pcMGoUOh"
+    token = os.environ.get("INMET_TOKEN")
+    if not token:
+        print("Erro em fetch_endpoint2: INMET_TOKEN environment variable not set")
+        queue.put([])
+        return
+    url = f"https://apitempo.inmet.gov.br/token/estacao/diaria/2022-11-01/2022-11-01/A001/{token}"
     try:
         response = requests.get(url)
         data = response.json()

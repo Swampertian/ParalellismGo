@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -39,7 +40,11 @@ func fetch_endpoint1(ch chan<- []INMET) {
 
 func fetch_endpoint2(ch chan<- []DADOS) {
 	start := time.Now()
-	url := "https://apitempo.inmet.gov.br/token/estacao/diaria/2022-11-01/2022-11-01/A001/b1dUemZPbmJLbHU1aWpGRnFEWWFvcTU4cGNNR29VT2g=oWTzfOnbKlu5ijFFqDYaoq58pcMGoUOh"
+	token := os.Getenv("INMET_TOKEN")
+	if token == "" {
+		panic("INMET_TOKEN environment variable not set")
+	}
+	url := "https://apitempo.inmet.gov.br/token/estacao/diaria/2022-11-01/2022-11-01/A001/" + token
 
 	resp, err := http.Get(url)
 	if err != nil {
